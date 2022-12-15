@@ -8,7 +8,7 @@ app.use(express.json());
 const pool = new Pool({
     user: 'postgres',
     host: 'localhost',
-    database: 'oop',
+    database: 'postgres',
     password: 'postgres',
     port: 5432
 });
@@ -25,7 +25,7 @@ app.get('/readers', async (req, res) => {
 });
 
 // задать читателей
-app.post('/readers', async (req, res) => {
+app.put('/readers', async (req, res) => {
     try {
         await pool.query(`DELETE FROM readers;`);
         await pool.query(`INSERT INTO readers (value) VALUES ${req.body.map(x => "('" + x + "')").join(', ')};`);
@@ -49,7 +49,7 @@ app.get('/books', async (req, res) => {
 });
 
 // задать книги
-app.post('/books', async (req, res) => {
+app.put('/books', async (req, res) => {
     try {
         await pool.query(`DELETE FROM books;`);
         await pool.query(`INSERT INTO books (value) VALUES ${req.body.map(x => "('" + x + "')").join(', ')};`);
