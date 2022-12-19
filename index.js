@@ -16,8 +16,8 @@ const pool = new Pool({
 // получить читателей
 app.get('/readers', async (req, res) => {
     try {
-        const result = await pool.query(`SELECT value FROM readers;`);
-        res.json(result.rows.map(x => x.value));
+        const result = await pool.query(`SELECT * FROM readers;`);
+        res.json(result.rows);
     } catch (_) {
         res.status(500);
     }
@@ -28,7 +28,9 @@ app.get('/readers', async (req, res) => {
 app.put('/readers', async (req, res) => {
     try {
         await pool.query(`DELETE FROM readers;`);
-        await pool.query(`INSERT INTO readers (value) VALUES ${req.body.map(x => "('" + x + "')").join(', ')};`);
+        req.body = req.body.map(x => JSON.parse(x));
+        // req.body.forEach(x => delete x['id']);
+        await pool.query(`INSERT INTO readers (full_name,id,phone_number) VALUES ${req.body.map(x => "(" + Object.values(x).map(x => "'" + x + "'").join(',') + ")").join(', ')};`);
         res.status(201)
     } catch (e) {
         console.log(e)
@@ -40,8 +42,8 @@ app.put('/readers', async (req, res) => {
 // получить книги
 app.get('/books', async (req, res) => {
     try {
-        const result = await pool.query(`SELECT value FROM books;`);
-        res.json(result.rows.map(x => x.value));
+        const result = await pool.query(`SELECT * FROM books;`);
+        res.json(result.rows);
     } catch (_) {
         res.status(500);
     }
@@ -52,7 +54,8 @@ app.get('/books', async (req, res) => {
 app.put('/books', async (req, res) => {
     try {
         await pool.query(`DELETE FROM books;`);
-        await pool.query(`INSERT INTO books (value) VALUES ${req.body.map(x => "('" + x + "')").join(', ')};`);
+        req.body = req.body.map(x => JSON.parse(x));
+        await pool.query(`INSERT INTO books (name,author,country,year,index,date_in,added_date,web,description,curr_user) VALUES ${req.body.map(x => "(" + Object.values(x).map(x => "'" + x + "'").join(',') + ")").join(', ')};`);
         res.status(201)
     } catch (e) {
         console.log(e)
